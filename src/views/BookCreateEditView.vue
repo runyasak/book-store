@@ -32,7 +32,6 @@ function onSubmit(params) {
           id="title"
           placeholder="Type here"
           rules="required"
-          model-value="World Book"
         />
         <ErrorMessage name="title">
           <span class="text-error"> Book name is required. </span>
@@ -48,7 +47,6 @@ function onSubmit(params) {
           id="authorId"
           placeholder="Type here"
           rules="required"
-          model-value="Shakesword"
         >
           <option disabled selected>Who shot first?</option>
           <option :value="1">Han Solo</option>
@@ -72,7 +70,6 @@ function onSubmit(params) {
           id="coverImageUrl"
           placeholder="Type here"
           rules="required"
-          model-value="https://fastly.picsum.photos/id/103/200/300.jpg?hmac=QNhmiuWX_v7Br1-vACnDXKchd_VJ1OjbxDKwIM2NpD4"
         />
         <ErrorMessage name="coverImageUrl">
           <span class="text-error"> Image URL is required. </span>
@@ -87,7 +84,6 @@ function onSubmit(params) {
           id="rating"
           placeholder="Type here"
           rules="required"
-          :model-value="5"
         />
         <ErrorMessage name="rating">
           <span class="text-error"> Rating is required. </span>
@@ -103,14 +99,11 @@ function onSubmit(params) {
           placeholder="Type here"
           rules="required"
           as="textarea"
-          model-value="This is the great book!!"
         />
         <ErrorMessage name="description">
           <span class="text-error"> Description is required. </span>
         </ErrorMessage>
       </div>
-
-      <!-- <textarea class="textarea textarea-bordered" placeholder="Bio"></textarea> -->
 
       <button class="btn btn-success text-white" type="submit">Save</button>
     </Form>
