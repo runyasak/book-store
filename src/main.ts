@@ -3,6 +3,8 @@ import './assets/main.css'
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
 import { DefaultApolloClient } from '@vue/apollo-composable'
 import { createApp, h, provide } from 'vue'
+import { defineRule } from 'vee-validate'
+import { required, email, min } from '@vee-validate/rules'
 import App from './App.vue'
 import router from './router'
 
@@ -20,6 +22,10 @@ const apolloClient = new ApolloClient({
   link: httpLink,
   cache
 })
+
+defineRule('required', required)
+defineRule('email', email)
+defineRule('min', min)
 
 const app = createApp({
   setup() {
