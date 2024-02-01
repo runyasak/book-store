@@ -1,37 +1,35 @@
 <script setup lang="ts">
-import { useQuery } from '@vue/apollo-composable'
+import useMutationDeleteBook from '@/composables/useMutationDeleteBook'
+import useQueryBooks from '@/composables/useQueryBooks'
 import dayjs from 'dayjs'
-import gql from 'graphql-tag'
+import { ref } from 'vue'
 
-interface QueryBooks {
-  books: {
-    bookId: number
-    title: string
-    coverImageUrl: string
-    publishedDate: string
-    author: {
-      name: string
-    }
-  }[]
-}
+const deleteBookId = ref<number | null>(null)
 
-const { result } = useQuery<QueryBooks>(gql`
-  query Books {
-    books {
-      bookId
-      title
-      coverImageUrl
-      publishedDate
-      author {
-        name
-      }
-    }
-  }
-`)
+const dialogRef = ref<{ showModal: () => void }>({ showModal: () => {} })
+
+const { result, refetch } = useQueryBooks()
+
+const { mutate: deleteBook, onDone } = useMutationDeleteBook()
 
 function formatDate(date: string) {
   return dayjs(date).format('MMMM YYYY')
 }
+
+function onClickDelete(bookId: number) {
+  dialogRef.value.showModal()
+  deleteBookId.value = bookId
+}
+
+function onMutateDeleteBook() {
+  if (deleteBookId.value) {
+    deleteBook({ bookId: deleteBookId.value })
+  }
+}
+
+onDone(() => {
+  refetch()
+})
 </script>
 
 <template>
@@ -58,10 +56,28 @@ function formatDate(date: string) {
           <div class="card-actions">
             <button class="btn btn-primary text-white !h-[24px] !min-h-[24px]">Read</button>
             <button class="btn btn-secondary text-white !h-[24px] !min-h-[24px]">Edit</button>
-            <button class="btn btn-error text-white !h-[24px] !min-h-[24px]">Delete</button>
+            <button
+              class="btn btn-error text-white !h-[24px] !min-h-[24px]"
+              @click="onClickDelete(book.bookId)"
+            >
+              Delete
+            </button>
           </div>
         </div>
       </div>
     </div>
+
+    <dialog ref="dialogRef" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Do you want to delete book?</h3>
+        <p class="py-4">Are you sure?</p>
+        <div class="modal-action">
+          <form method="dialog" class="flex gap-4">
+            <button class="btn">Close</button>
+            <button class="btn btn-error text-white" @click="onMutateDeleteBook">Delete</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
   </div>
 </template>
