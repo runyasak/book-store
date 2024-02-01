@@ -22,9 +22,9 @@ function onSubmit(params) {
 }
 </script>
 <template>
-  <div class="container mx-auto p-8">
-    <Form class="flex flex-col gap-4 items-center" @submit="onSubmit">
-      <div class="flex flex-col gap-2 w-full max-w-xs">
+  <div class="container mx-auto p-8 flex justify-center">
+    <Form class="flex flex-col gap-4 items-center w-full max-w-xs" @submit="onSubmit">
+      <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="title">Book Name</label>
         <Field
           class="input input-bordered"
@@ -38,7 +38,7 @@ function onSubmit(params) {
         </ErrorMessage>
       </div>
 
-      <div class="flex flex-col gap-2 w-full max-w-xs">
+      <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="authorId">Author</label>
         <Field
           as="select"
@@ -58,7 +58,7 @@ function onSubmit(params) {
         </ErrorMessage>
       </div>
 
-      <div class="flex flex-col gap-2 w-full max-w-xs">
+      <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="coverImageUrl">Image URL</label>
         <Field
           class="input input-bordered"
@@ -72,7 +72,7 @@ function onSubmit(params) {
         </ErrorMessage>
       </div>
 
-      <div class="flex flex-col gap-2 w-full max-w-xs">
+      <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="rating">Rating (number)</label>
         <Field
           class="input input-bordered"
@@ -86,7 +86,7 @@ function onSubmit(params) {
         </ErrorMessage>
       </div>
 
-      <div class="flex flex-col gap-2 w-full max-w-xs">
+      <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="description">Description</label>
         <Field
           class="textarea textarea-bordered"
@@ -101,7 +101,7 @@ function onSubmit(params) {
         </ErrorMessage>
       </div>
 
-      <button class="btn btn-success text-white" type="submit">Save</button>
+      <button class="btn btn-success text-white w-full" type="submit">Save</button>
     </Form>
   </div>
 </template>
