@@ -1,7 +1,23 @@
 <script setup lang="ts">
-import { useMutation } from '@vue/apollo-composable'
+import { useQuery, useMutation } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { Form, Field, ErrorMessage } from 'vee-validate'
+
+interface QueryAuthors {
+  authors: {
+    id: number
+    name: string
+  }[]
+}
+
+const { result: authorsResult } = useQuery<QueryAuthors>(gql`
+  query Authors {
+    authors {
+      id
+      name
+    }
+  }
+`)
 
 const { mutate: createBook } = useMutation(gql`
   mutation createBook($createBookRequest: RequestBookInput!) {
@@ -42,6 +58,7 @@ function onSubmit(params) {
       <div class="flex flex-col gap-2 w-full max-w-xs">
         <label class="font-bold" for="authorId">Author</label>
         <Field
+          v-if="authorsResult"
           as="select"
           class="select select-bordered"
           name="authorId"
@@ -51,14 +68,14 @@ function onSubmit(params) {
           model-value="Shakesword"
         >
           <option disabled selected>Who shot first?</option>
-          <option :value="1">Han Solo</option>
-          <option :value="2">Greedo</option>
+          <option
+            v-for="author in authorsResult.authors"
+            :key="author.id"
+            :value="author.id"
+          >
+            {{ author.name }}
+          </option>
         </Field>
-        <!-- <select class="select select-bordered w-full max-w-xs">
-  <option disabled selected>Who shot first?</option>
-  <option>Han Solo</option>
-  <option>Greedo</option>
-</select> -->
         <ErrorMessage name="author">
           <span class="text-error"> Author is required. </span>
         </ErrorMessage>
