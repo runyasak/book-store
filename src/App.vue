@@ -3,8 +3,10 @@
 <template>
   <div class="navbar bg-primary justify-center">
     <div class="container">
-      <RouterLink to="/" class="text-xl font-bold text-white">Book Store Management</RouterLink>
-      <div class="ml-auto text-xl text-white">YOUR NAME</div>
+      <RouterLink to="/" class="text-xl font-bold text-white">
+        Book Store Management
+      </RouterLink>
+      <div class="ml-auto text-xl text-white">World</div>
     </div>
   </div>
   <RouterView />
