@@ -1,45 +1,59 @@
 <script setup lang="ts">
-import { useQuery } from '@vue/apollo-composable'
-import gql from 'graphql-tag'
-import { Form, Field } from 'vee-validate'
-import { useRoute } from 'vue-router'
-
-interface AuthorsSelect {
-  authors: {
-    id: number
-    name: string
-  }[]
-}
+import useMutationUpdateBook from '@/composables/useMutationUpdateBook'
+import useQueryAuthorsSelect from '@/composables/useQueryAuthorsSelect'
+import useQueryBookEditDetail from '@/composables/useQueryBookEditDetail'
+import type { RequestBookInput } from '@/models/book.model'
+import {
+  Form,
+  Field,
+  type GenericObject,
+  type SubmissionHandler
+} from 'vee-validate'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 
-const bookId = route.params['bookId']
+const router = useRouter()
 
-console.log('bookId', bookId)
+const bookId = Number(route.params['bookId'].toString())
 
-const { result: authorsSelect } = useQuery<AuthorsSelect>(gql`
-  query AuthorsSelect {
-    authors {
-      id
-      name
-    }
+const { result: bookDetail } = useQueryBookEditDetail(Number(bookId.toString()))
+
+const { result: authorsSelect } = useQueryAuthorsSelect()
+
+const { mutate: updateBookMutate, onDone: onDoneUpdateBookMutate } =
+  useMutationUpdateBook()
+
+const currentBookDetail = computed(() => {
+  if (!bookDetail.value) {
+    return null
   }
-`)
 
-const initialValue = {
-  title: 'World Book',
-  authorId: 1,
-  coverImageUrl: 'image.com',
-  rating: 5,
-  description: 'This is the great book'
+  const { __typename, ...restData } = bookDetail.value.books[0]
+
+  return restData
+})
+
+const handleSubmit: SubmissionHandler<GenericObject, GenericObject, unknown> = (
+  params
+) => {
+  const requestBookInput = params as RequestBookInput
+  updateBookMutate({ bookId: bookId, requestBookInput: requestBookInput })
 }
+
+onDoneUpdateBookMutate(() => {
+  router.push({ name: 'home' })
+})
 </script>
 
 <template>
   <div class="container mx-auto p-8 flex justify-center">
     <Form
-      :initial-values="initialValue"
+      v-if="currentBookDetail"
+      :initial-values="currentBookDetail"
       class="flex flex-col gap-4 items-center w-full max-w-xs"
+      @submit="handleSubmit"
     >
       <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="title">Book Name</label>

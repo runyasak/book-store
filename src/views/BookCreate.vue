@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { RequestBookInput } from '@/models/book.model'
 import { useMutation, useQuery } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import {
@@ -45,14 +46,6 @@ const { mutate, onDone } = useMutation<
     }
   }
 `)
-
-interface RequestBookInput {
-  title: string
-  authorId: number
-  coverImageUrl: string
-  rating: number
-  description: string
-}
 
 const handleSubmit: SubmissionHandler<GenericObject, GenericObject, unknown> = (
   params
