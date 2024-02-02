@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { useMutation, useQuery } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
-import { Form, Field } from 'vee-validate'
+import {
+  Form,
+  Field,
+  type SubmissionHandler,
+  type GenericObject
+} from 'vee-validate'
 import { useRouter } from 'vue-router'
 
 interface AddNewBookResult {
@@ -49,8 +54,10 @@ interface RequestBookInput {
   description: string
 }
 
-function handleSubmit(params: any) {
-  const requestBookInput: RequestBookInput = params
+const handleSubmit: SubmissionHandler<GenericObject, GenericObject, unknown> = (
+  params
+) => {
+  const requestBookInput = params as RequestBookInput
   mutate({ requestBookInput: requestBookInput })
 }
 
