@@ -116,8 +116,8 @@ onDoneUpdateBookMutate(() => {
         />
       </div>
 
-      <button class="btn btn-success text-white w-full" type="submit">
-        Save
+      <button class="btn btn-primary text-white w-full" type="submit">
+        Update
       </button>
     </Form>
   </div>
