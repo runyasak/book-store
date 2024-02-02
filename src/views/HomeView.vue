@@ -29,13 +29,11 @@ function formatDate(value: string) {
 }
 
 function onClickDeleteBook(bookId: number) {
-  console.log('delete book', bookId)
   deleteModalOpen.value = true
   deleteBookId.value = bookId
 }
 
 function handleMutateDeleteBook() {
-  console.log('handleMutateDeleteBook')
   mutate({ bookId: deleteBookId.value })
 }
 
@@ -45,7 +43,6 @@ function onRefetchBooks(after?: string) {
 
 onDone((params) => {
   if (params.data?.data.deleteBook) {
-    console.log('on Done', params)
     refetch()
   } else {
     console.error(new Error('Cannot delete book'))
