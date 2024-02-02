@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useQuery, useMutation } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { Form, Field, ErrorMessage } from 'vee-validate'
+import { useRoute } from 'vue-router';
 
 interface QueryAuthors {
   authors: {
@@ -31,9 +33,74 @@ const { mutate: createBook } = useMutation(gql`
   }
 `)
 
+const { mutate: updateBook } = useMutation(gql`
+  mutation updateBook($bookId: Int!, $bookRequest: RequestBookInput) {
+    updateBook(id: $bookId, bookRequest: $bookRequest) {
+      title
+      authorId
+      coverImageUrl
+      description
+      rating
+    }
+  }
+`)
+
+const formValues = ref({
+  title: null,
+  authorId: null,
+  coverImageUrl: null,
+  rating: null,
+  description: null,
+})
+
+const route = useRoute()
+const bookId: number | undefined = route.params.id
+if(bookId){
+  const { result: bookResult } = useQuery(gql`
+    query Book {
+      books (where: { bookId: { eq: ${bookId} } }) {
+        bookId
+        author {
+            id
+        }
+        title
+        coverImageUrl
+        rating
+        description
+      }
+    }
+  `)
+  watch(bookResult, value => {
+    if(value.books[0]) {
+      formValues.value.title = value.books[0].title
+      formValues.value.authorId = value.books[0].author.id
+      formValues.value.rating = value.books[0].rating
+      formValues.value.coverImageUrl = value.books[0].coverImageUrl
+      formValues.value.description = value.books[0].description
+    }
+  })
+    
+}
+
+
 function onSubmit(params) {
+  if (bookId) {
+    onUpdate(params)
+  } else {
+    onCreate(params)
+  }
+}
+
+function onCreate(params) {
   createBook({
     createBookRequest: params
+  })
+}
+
+function onUpdate(params) {
+  updateBook({
+    bookId: Number(bookId),
+    bookRequest: params
   })
 }
 </script>
@@ -43,6 +110,7 @@ function onSubmit(params) {
       <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="title">Book Name</label>
         <Field
+          v-model="formValues.title"
           class="input input-bordered"
           name="title"
           id="title"
@@ -58,6 +126,7 @@ function onSubmit(params) {
         <label class="font-bold" for="authorId">Author</label>
         <Field
           v-if="authorsResult"
+          v-model="formValues.authorId"
           as="select"
           class="select select-bordered"
           name="authorId"
@@ -78,6 +147,7 @@ function onSubmit(params) {
       <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="coverImageUrl">Image URL</label>
         <Field
+          v-model="formValues.coverImageUrl"
           class="input input-bordered"
           name="coverImageUrl"
           id="coverImageUrl"
@@ -92,6 +162,7 @@ function onSubmit(params) {
       <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="rating">Rating (number)</label>
         <Field
+          v-model="formValues.rating"
           class="input input-bordered"
           name="rating"
           id="rating"
@@ -106,6 +177,7 @@ function onSubmit(params) {
       <div class="flex flex-col gap-2 w-full">
         <label class="font-bold" for="description">Description</label>
         <Field
+          v-model="formValues.description"
           class="textarea textarea-bordered"
           name="description"
           id="description"

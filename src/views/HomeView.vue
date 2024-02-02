@@ -55,7 +55,7 @@ onDone(() => {
           </div>
           <div class="card-actions">
             <button class="btn btn-primary text-white !h-[24px] !min-h-[24px]">Read</button>
-            <button class="btn btn-secondary text-white !h-[24px] !min-h-[24px]">Edit</button>
+            <RouterLink :to="{ name: 'book-update', params: { id: book.bookId} }" class="btn btn-secondary text-white !h-[24px] !min-h-[24px]">Edit</RouterLink>
             <button
               class="btn btn-error text-white !h-[24px] !min-h-[24px]"
               @click="onClickDelete(book.bookId)"
