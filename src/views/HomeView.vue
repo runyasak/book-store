@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DeleteBookModal from '@/components/DeleteBookModal.vue'
-import useQueryBooks from '@/composables/useQueryBooks'
+import useQueryBooksPagination from '@/composables/useQueryBooksPagination'
 import { useMutation } from '@vue/apollo-composable'
 import dayjs from 'dayjs'
 import gql from 'graphql-tag'
@@ -10,7 +10,7 @@ const deleteModalOpen = ref(false)
 
 const deleteBookId = ref<number | null>(null)
 
-const { result, refetch } = useQueryBooks()
+const { result, refetch } = useQueryBooksPagination()
 
 interface DeleteBookByIdResponse {
   data: {
@@ -37,6 +37,10 @@ function onClickDeleteBook(bookId: number) {
 function handleMutateDeleteBook() {
   console.log('handleMutateDeleteBook')
   mutate({ bookId: deleteBookId.value })
+}
+
+function onRefetchBooks(after?: string) {
+  refetch({ after: after })
 }
 
 onDone((params) => {
@@ -82,13 +86,26 @@ onDone((params) => {
       </RouterLink>
     </div>
 
-    <div class="flex justify-around pt-4">
-      <button class="btn">Prev</button>
-      <button class="btn">Next</button>
+    <div class="join grid grid-cols-2 pt-4 max-w-xs mx-auto">
+      <button
+        class="join-item btn btn-outline"
+        :disabled="!result?.booksPagination.pageInfo.hasPreviousPage"
+        @click="onRefetchBooks(result?.booksPagination.pageInfo.startCursor)"
+      >
+        Previous
+      </button>
+      <button
+        class="join-item btn btn-outline"
+        :disabled="!result?.booksPagination.pageInfo.hasNextPage"
+        @click="onRefetchBooks(result?.booksPagination.pageInfo.endCursor)"
+      >
+        Next
+      </button>
     </div>
+
     <div class="grid grid-cols-4 gap-4 pt-8">
       <div
-        v-for="book in result?.books"
+        v-for="book in result?.booksPagination.nodes"
         :key="book.bookId"
         class="card bg-base-100 shadow-xl"
       >
