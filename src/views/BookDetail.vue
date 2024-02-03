@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { QueryBooksById } from '@/models/book.model'
 import { formatDate } from '@/utils/date.util'
 import { useQuery } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
@@ -8,22 +9,6 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const bookId = route.params['bookId']
-
-interface QueryBooksById {
-  books: {
-    __typename: string
-    bookId: number
-    title: string
-    coverImageUrl: string
-    publishedDate: string
-    rating: number
-    description: string
-    author: {
-      __typename: string
-      name: string
-    }
-  }[]
-}
 
 const { result } = useQuery<QueryBooksById>(
   gql`

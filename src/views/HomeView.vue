@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DeleteBookModal from '@/components/DeleteBookModal.vue'
 import useQueryBooksPagination from '@/composables/useQueryBooksPagination'
+import type { DeleteBookByIdResponse } from '@/models/book.model'
 import { formatDate } from '@/utils/date.util'
 import { useMutation } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
@@ -11,12 +12,6 @@ const deleteModalOpen = ref(false)
 const deleteBookId = ref<number | null>(null)
 
 const { result, refetch } = useQueryBooksPagination()
-
-interface DeleteBookByIdResponse {
-  data: {
-    deleteBook: boolean
-  }
-}
 
 const { mutate, onDone } = useMutation<DeleteBookByIdResponse>(gql`
   mutation DeleteBookByBookId($bookId: Int!) {

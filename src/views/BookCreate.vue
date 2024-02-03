@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { RequestBookInput } from '@/models/book.model'
+import type {
+  AddNewBookResult,
+  RequestBookInput,
+  RequestBookInputVariable
+} from '@/models/book.model'
 import { useMutation, useQuery } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import {
@@ -9,14 +13,6 @@ import {
   type GenericObject
 } from 'vee-validate'
 import { useRouter } from 'vue-router'
-
-interface AddNewBookResult {
-  data: { addBook: { bookId: number; __typename: string } }
-}
-
-interface RequestBookInputVariable {
-  requestBookInput: RequestBookInput
-}
 
 interface AuthorsSelect {
   authors: {
