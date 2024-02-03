@@ -127,13 +127,18 @@ onDone((params) => {
                 name: 'books-detail',
                 params: { bookId: book.bookId }
               }"
-              class="btn btn-primary text-white"
+              class="btn btn-primary text-white !h-[24px] !min-h-[24px]"
             >
               Read
             </RouterLink>
-            <button class="btn btn-primary text-white">Edit</button>
+            <RouterLink
+              :to="{ name: 'edit-book', params: { bookId: book.bookId } }"
+              class="btn btn-secondary text-white !h-[24px] !min-h-[24px]"
+            >
+              Edit
+            </RouterLink>
             <button
-              class="btn btn-error text-white"
+              class="btn btn-error text-white !h-[24px] !min-h-[24px]"
               @click="onClickDeleteBook(book.bookId)"
             >
               Delete
