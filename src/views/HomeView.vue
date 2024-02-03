@@ -4,20 +4,27 @@ import useQueryBooksPagination from '@/composables/useQueryBooksPagination'
 import type { DeleteBookByIdResponse } from '@/models/book.model'
 import { formatDate } from '@/utils/date.util'
 import { useMutation } from '@vue/apollo-composable'
+import { useInfiniteScroll } from '@vueuse/core'
 import gql from 'graphql-tag'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const deleteModalOpen = ref(false)
 
 const deleteBookId = ref<number | null>(null)
 
-const { result, refetch } = useQueryBooksPagination()
+const contentBodyEl = ref<HTMLElement | null>(null)
+
+const { result, refetch, fetchMore, loading } = useQueryBooksPagination()
 
 const { mutate, onDone } = useMutation<DeleteBookByIdResponse>(gql`
   mutation DeleteBookByBookId($bookId: Int!) {
     deleteBook(id: $bookId)
   }
 `)
+
+const fetchMoreActive = computed(
+  () => !loading.value && result.value?.booksPagination.pageInfo.hasNextPage
+)
 
 function onClickDeleteBook(bookId: number) {
   deleteModalOpen.value = true
@@ -28,8 +35,26 @@ function handleMutateDeleteBook() {
   mutate({ bookId: deleteBookId.value })
 }
 
-function onRefetchBooks(after?: string) {
-  refetch({ after: after })
+function onFetchMore() {
+  fetchMore({
+    variables: { after: result.value?.booksPagination.pageInfo.endCursor },
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      if (!fetchMoreResult) {
+        return previousResult
+      }
+
+      return {
+        ...previousResult,
+        booksPagination: {
+          ...fetchMoreResult.booksPagination,
+          nodes: [
+            ...previousResult.booksPagination.nodes,
+            ...fetchMoreResult.booksPagination.nodes
+          ]
+        }
+      }
+    }
+  })
 }
 
 onDone((params) => {
@@ -39,10 +64,20 @@ onDone((params) => {
     console.error(new Error('Cannot delete book'))
   }
 })
+
+useInfiniteScroll(
+  contentBodyEl,
+  () => {
+    if (fetchMoreActive.value) {
+      onFetchMore()
+    }
+  },
+  { distance: 10, throttle: 1000 }
+)
 </script>
 
 <template>
-  <div class="container p-8 mx-auto">
+  <div class="container p-8 mx-auto overflow-auto">
     <div class="flex justify-end">
       <RouterLink
         :to="{ name: 'create-book' }"
@@ -72,23 +107,6 @@ onDone((params) => {
 
         Create New Book
       </RouterLink>
-    </div>
-
-    <div class="join grid grid-cols-2 pt-4 max-w-xs mx-auto">
-      <button
-        class="join-item btn btn-outline"
-        :disabled="!result?.booksPagination.pageInfo.hasPreviousPage"
-        @click="onRefetchBooks(result?.booksPagination.pageInfo.startCursor)"
-      >
-        Previous
-      </button>
-      <button
-        class="join-item btn btn-outline"
-        :disabled="!result?.booksPagination.pageInfo.hasNextPage"
-        @click="onRefetchBooks(result?.booksPagination.pageInfo.endCursor)"
-      >
-        Next
-      </button>
     </div>
 
     <div class="grid grid-cols-4 gap-4 pt-8">
@@ -142,6 +160,7 @@ onDone((params) => {
         </div>
       </div>
     </div>
+    <div v-if="fetchMoreActive" ref="contentBodyEl"></div>
   </div>
 
   <DeleteBookModal
