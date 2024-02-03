@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatDate } from '@/utils/date.util'
 import { useQuery } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
 import { computed } from 'vue'
@@ -59,7 +60,7 @@ const currentBook = computed(() => result.value?.books[0] || null)
     <div class="flex flex-1 flex-col gap-4">
       <div class="text-4xl font-bold">{{ currentBook.title }}</div>
       <div>Author: {{ currentBook.author.name }}</div>
-      <div>Published Date : {{ currentBook.publishedDate }}</div>
+      <div>Published Date : {{ formatDate(currentBook.publishedDate) }}</div>
       <div class="flex gap-4">
         <span> Rating : </span>
         <span>{{ currentBook.rating }}</span>

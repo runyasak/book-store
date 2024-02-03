@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import DeleteBookModal from '@/components/DeleteBookModal.vue'
 import useQueryBooksPagination from '@/composables/useQueryBooksPagination'
+import { formatDate } from '@/utils/date.util'
 import { useMutation } from '@vue/apollo-composable'
-import dayjs from 'dayjs'
 import gql from 'graphql-tag'
 import { ref } from 'vue'
 
@@ -23,10 +23,6 @@ const { mutate, onDone } = useMutation<DeleteBookByIdResponse>(gql`
     deleteBook(id: $bookId)
   }
 `)
-
-function formatDate(value: string) {
-  return dayjs(value).format('MMMM YYYY')
-}
 
 function onClickDeleteBook(bookId: number) {
   deleteModalOpen.value = true
